@@ -1,0 +1,30 @@
+import express from "express";
+import dotenv from "dotenv";
+import cors from "cors";
+import morgan from "morgan";
+import { createServer } from "http";
+import { fileURLToPath } from "url";
+import authRoutes from "./Routes/authRoutes.js";
+
+dotenv.config();
+
+const app = express();
+const PORT = process.env.PORT || 5000;
+const server = createServer(app);
+
+app.use(cors());
+
+const __filename = fileURLToPath(import.meta.url);
+
+app.use(express.json());
+app.use(morgan("dev"));
+
+app.get("/", (req, res) => {
+  res.send("Project is running on PORT 5000 successfully");
+});
+
+app.use("/", authRoutes);
+
+server.listen(PORT, () => {
+  console.log(`Server running on ${PORT}`);
+});
