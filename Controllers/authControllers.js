@@ -3,6 +3,7 @@ import {
   generateOtp,
   sendOtpMail,
 } from "../Helpers/authUtils.js";
+import { clientConnection } from "../Helpers/dbConnection.js";
 
 export const emaillogin = async (req, res) => {
   try {
@@ -65,6 +66,39 @@ export const emailLoginVerify = async (req, res) => {
         msg: "otp not verified",
       });
     }
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      error,
+    });
+  }
+};
+
+export const userSignup = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      res.status(404).send({
+        success: false,
+        msg: "Email is required",
+      });
+    }
+    const result = await clientConnection("Users").findOne({ email });
+    if (result) {
+      res.status(301).send({
+        success: false,
+        msg: "User already exists",
+      });
+    }
+    await clientConnection("Users").insertOne({
+      email: req.body.email,
+      otp: null,
+    });
+    res.status(200).send({
+      success: true,
+      msg: "User successfully registered",
+    });
   } catch (error) {
     console.log(error);
     res.status(500).send({

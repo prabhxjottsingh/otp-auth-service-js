@@ -5,6 +5,7 @@ import morgan from "morgan";
 import { createServer } from "http";
 import { fileURLToPath } from "url";
 import authRoutes from "./Routes/authRoutes.js";
+import { databaseConnection } from "./Helpers/dbConnection.js";
 
 dotenv.config();
 
@@ -26,5 +27,8 @@ app.get("/", (req, res) => {
 app.use("/", authRoutes);
 
 server.listen(PORT, () => {
-  console.log(`Server running on ${PORT}`);
+  databaseConnection().then(() => {
+    const currentDate = new Date();
+    console.log(`Server running on ${PORT}`);
+  });
 });
